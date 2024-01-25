@@ -6,8 +6,9 @@ from app1.models import *
 from app1.forms import *
 from django.http import HttpResponse,HttpResponseRedirect
 from django.core.mail import send_mail
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate,login,logout
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 def registration_views(request):
     ufo=User_Form()
@@ -63,4 +64,19 @@ def user_login(request):
 
     return render(request,'user_login.html')
 
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('home'))
 
+
+
+
+@login_required
+def profile_display(request):
+    un=request.session.get('username')
+    uo=User.objects.get(username=un)
+    po=Profile.objects.get(username=uo)
+    d={'po':po,'uo':uo}
+    return render(request,'profile_display.html',d)
+    
